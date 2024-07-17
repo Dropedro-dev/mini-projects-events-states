@@ -4,25 +4,38 @@ import { photoList } from "@/data/photoList";
 import { PhotoItem } from "./photoItem";
 import { useState } from "react";
 import { Modal } from "./modal";
+import { GoTools } from "react-icons/go";
 
 const Galery = () => {
     const [modalView, setModalView] = useState<boolean>(false);
-    const [modalImg, setModalImg] = useState<string>('');
+    const [modalIndex, setmodalIndex] = useState<number>(0);
 
     const openModal = (id: number) =>{
-        const photo = photoList.find(item => item.id === id);
-
-        if(photo) {
-            setModalImg(photo.url)
-            setModalView(true);
-        }
+        setModalView(true);
+        setmodalIndex(id -1)
     }
 
     const closeModal =()=> {
         setModalView(false);
-        setModalImg('');
+        setmodalIndex(0);
     }
 
+    const prevSlide =()=> {
+        const isFirstPhoto = modalIndex === 0;
+        const newIndex = isFirstPhoto ? photoList.length -1: modalIndex -1;
+
+        setmodalIndex(newIndex);
+    }
+
+    const nextSlide =()=> {
+        const isLastPhoto = modalIndex === photoList.length -1;
+        const newIndex = isLastPhoto ? 0: modalIndex +1;
+
+        setmodalIndex(newIndex);
+    }
+
+    const goTOSlide=(index:number) => setmodalIndex(index);
+  
     return (
         <div className="mx-2 mb-2">
             <h1 className="text-center text-3xl font-bold mb-10">Fotos intergalácticas</h1>
@@ -37,9 +50,13 @@ const Galery = () => {
             </section>
             {modalView && 
                 <Modal 
-                image={modalImg}
+                image={photoList[modalIndex].url}
                 closeModal={closeModal}
-                photoList={photoList} />}
+                prevSlide={prevSlide}
+                nextSlide={nextSlide}
+                slidePositions={photoList.length}
+                modalIndex={modalIndex}
+                goToSlide={goTOSlide} />}
         </div>
     )
 }
